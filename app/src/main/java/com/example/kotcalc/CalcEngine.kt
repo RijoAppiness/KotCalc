@@ -1,5 +1,7 @@
 package com.example.kotcalc
 
+import android.util.Log
+
 class CalcEngine {
 
     //this is from sreeram
@@ -203,6 +205,12 @@ class CalcEngine {
         return ""
     }
 
+    fun demo(){
+        var i = 0
+        for (i in 0..1){
+            Log.d("TEST123","=="+i)
+        }
+    }
 
     private fun popValue() {
         if (!valueList.isEmpty())
@@ -230,5 +238,4 @@ class CalcEngine {
         return false
 
     }
-
 }
