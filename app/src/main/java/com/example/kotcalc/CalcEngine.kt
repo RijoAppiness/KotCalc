@@ -1,6 +1,8 @@
 package com.example.kotcalc
 
 class CalcEngine {
+
+    //this is from sreeram
     private val calcRegex = Regex("[-]?[0-9]*\\.?[0-9]*")
     private var lastTextTmp: String = ""
     private var lastText: String = ""
