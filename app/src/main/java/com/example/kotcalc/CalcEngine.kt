@@ -124,7 +124,7 @@ class CalcEngine {
                           else-> valueList[index].toString()
                     }
 
-                } + if (operatorList.isNotEmpty()) operatorList[index].symbol else ""
+                } + if (operatorList.isNotEmpty() && valueList.size!=operatorList.size+1) operatorList[index].symbol else ""
             }
 
             displayString+lastText
@@ -136,23 +136,27 @@ class CalcEngine {
 
     private fun startCalculation() {
         // Finish primary level calculations include X / and % etc
+        //println(calcEngine)
         var index = operatorList.lastIndex
         while(operatorList.size>0&&index!=-1) {
-            when (operatorList[0]) {
+            when (operatorList[index]) {
                 is KEY.INTO -> {
-                    valueList[0] = valueList[0] * valueList[1]
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] * valueList[index+1]
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+                    index--
                 }
                 is KEY.DIVIDE -> {
-                    valueList[0] = valueList[0] / valueList[1]
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] / valueList[index+1]
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+                    index--
                 }
                 is KEY.PERCENTAGE -> {
-                    valueList[0] = valueList[0] * valueList[1] / 100
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] * valueList[index+1] / 100
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+                    index--
                 }
                 else->{
                     index--
@@ -162,6 +166,7 @@ class CalcEngine {
 
 
         }
+        //println(calcEngine)
         // Finish secondary level calculations include + -  etc
         index = operatorList.lastIndex
         while(operatorList.size>0&&index!=-1) {
@@ -229,6 +234,17 @@ class CalcEngine {
             return true
         return false
 
+    }
+
+    override fun toString(): String {
+        return run {
+            var stack = ""
+            for (index in valueList.indices){
+                stack+="${valueList[index]}\t\t${
+                if(index>operatorList.lastIndex)"" else operatorList[index].symbol}\n"
+            }
+            stack
+        }
     }
 
 }
