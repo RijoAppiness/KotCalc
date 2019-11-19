@@ -1,5 +1,7 @@
 package com.example.kotcalc
 
+import android.util.Log
+
 class CalcEngine {
     private val calcRegex = Regex("[-]?[0-9]*\\.?[0-9]*")
     private var lastTextTmp: String = ""
@@ -228,5 +230,9 @@ class CalcEngine {
         return false
 
     }
-
+    private fun gitTest(){
+        for(i in 0..10){
+            Log.d("TEST456","Hi")
+        }
+    }
 }
