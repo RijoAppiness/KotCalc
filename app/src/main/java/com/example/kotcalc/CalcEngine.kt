@@ -208,7 +208,8 @@ class CalcEngine {
     fun demo(){
         var i = 0
         for (i in 0..1){
-            Log.d("TEST123","=="+i)
+          //  Log.d("TEST123","=="+i)
+            Log.d("SaranyaChanges","=="+i)
         }
     }
 
