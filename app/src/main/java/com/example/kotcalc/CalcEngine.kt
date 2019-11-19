@@ -3,6 +3,8 @@ package com.example.kotcalc
 import android.util.Log
 
 class CalcEngine {
+
+    //this is from sreeram
     private val calcRegex = Regex("[-]?[0-9]*\\.?[0-9]*")
     private var lastTextTmp: String = ""
     private var lastText: String = ""
@@ -203,6 +205,12 @@ class CalcEngine {
         return ""
     }
 
+    fun demo(){
+        var i = 0
+        for (i in 0..1){
+            Log.d("TEST123","=="+i)
+        }
+    }
 
     private fun popValue() {
         if (!valueList.isEmpty())
@@ -230,9 +238,10 @@ class CalcEngine {
         return false
 
     }
-    private fun gitTest(){
-        for(i in 0..10){
-            Log.d("TEST456","Hi")
-        }
+private fun gitTest(){
+    for(i in 0..10){
+        Log.d("CALC123","Hi")
     }
+  }
+
 }
