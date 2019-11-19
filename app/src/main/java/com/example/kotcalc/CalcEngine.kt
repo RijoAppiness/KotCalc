@@ -245,4 +245,11 @@ private fun gitTest(){
         Log.d("SREERAM TESTING","This is changes from sreeram")
     }
   }
+    private fun gitTest2() {
+        var i=0
+        when(i){
+            1 -> Log.d("TEST","ww")
+            2 -> Log.d("TEST123","q")
+        }
+    }
 }
