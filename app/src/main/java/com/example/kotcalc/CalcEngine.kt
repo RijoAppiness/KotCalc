@@ -238,4 +238,9 @@ class CalcEngine {
         return false
 
     }
+private fun gitTest(){
+    for(i in 0..10){
+        Log.d("TEST123","Hi")
+    }
+  }
 }
