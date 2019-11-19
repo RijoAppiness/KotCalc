@@ -242,7 +242,7 @@ class CalcEngine {
 private fun gitTest(){
     for(i in 0..10){
         Log.d("CALC123","HELLO")
-        Log.d("SREERAM CHANGES","This is changes from sreeram")
+        Log.d("SREERAM TESTING","This is changes from sreeram")
     }
   }
 }
