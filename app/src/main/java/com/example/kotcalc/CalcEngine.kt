@@ -1,14 +1,17 @@
 package com.example.kotcalc
 
-class CalcEngine {
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+
+open class CalcEngine {
 
     // change from rijo 1
     private val calcRegex = Regex("[-]?[0-9]*\\.?[0-9]*")
     private var lastTextTmp: String = ""
     private var lastText: String = ""
-    private val valueList: MutableList<Double> = ArrayList()
-    private val operatorList: MutableList<KEY> = ArrayList()
-    fun pushKey(key: KEY) {
+    private var valueList: MutableList<Double> = ArrayList()
+    private var operatorList: MutableList<KEY> = ArrayList()
+    open fun pushKey(key: KEY) {
         when (key) {
             is KEY.ONE -> {
                 lastTextTmp += key.symbol
@@ -136,61 +139,67 @@ class CalcEngine {
 
     private fun startCalculation() {
         // Finish primary level calculations include X / and % etc
-        //println(calcEngine)
-        var index = operatorList.lastIndex
-        while(operatorList.size>0&&index!=-1) {
+
+        var index = 0
+        while(operatorList.size>0&&index<=operatorList.lastIndex) {
             when (operatorList[index]) {
                 is KEY.INTO -> {
                     valueList[index] = valueList[index] * valueList[index+1]
                     valueList.removeAt(index+1)
                     operatorList.removeAt(index)
-                    index--
+
                 }
                 is KEY.DIVIDE -> {
                     valueList[index] = valueList[index] / valueList[index+1]
                     valueList.removeAt(index+1)
                     operatorList.removeAt(index)
-                    index--
+
                 }
                 is KEY.PERCENTAGE -> {
                     valueList[index] = valueList[index] * valueList[index+1] / 100
                     valueList.removeAt(index+1)
                     operatorList.removeAt(index)
-                    index--
+
                 }
                 else->{
-                    index--
+                    index++
                 }
 
             }
 
 
         }
-        //println(calcEngine)
         // Finish secondary level calculations include + -  etc
-        index = operatorList.lastIndex
-        while(operatorList.size>0&&index!=-1) {
-            when (operatorList[0]) {
+        index = 0
+        while(operatorList.size>0&&index<=operatorList.lastIndex) {
+            when (operatorList[index]) {
                 is KEY.PLUS -> {
-                    valueList[0] = valueList[0] + valueList[1]
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] + valueList[index+1]
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+
                 }
                 is KEY.MINUS -> {
-                    valueList[0] = valueList[0] - valueList[1]
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] - valueList[index+1]
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+
                 }
                 else->{
-                    index--
+                    index++
                 }
 
             }
         }
 
     }
-    fun getResult():String{
-        return if(valueList.isNotEmpty())valueList[valueList.lastIndex].toString() else ""
+
+
+
+
+
+    fun getResult():Double{
+        return if(valueList.isNotEmpty())valueList[valueList.lastIndex] else 0.0
     }
 
     private fun popAllOperators() {
@@ -246,5 +255,17 @@ class CalcEngine {
             stack
         }
     }
+
+}
+class ObservableCalcEngine:CalcEngine(){
+    private val displayString:MutableLiveData<String> = MutableLiveData()
+    override fun pushKey(key:KEY){
+        super.pushKey(key)
+        displayString.value = getDisplayString()
+    }
+    fun getObservableDisplay():LiveData<String>{
+        return displayString
+    }
+
 
 }
