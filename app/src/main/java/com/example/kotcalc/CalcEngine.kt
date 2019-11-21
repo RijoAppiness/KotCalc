@@ -1,16 +1,17 @@
 package com.example.kotcalc
 
-import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 
-class CalcEngine {
+open class CalcEngine {
 
-    //this is from sreeram
+    // change from rijo 1
     private val calcRegex = Regex("[-]?[0-9]*\\.?[0-9]*")
     private var lastTextTmp: String = ""
     private var lastText: String = ""
-    private val valueList: MutableList<Double> = ArrayList()
-    private val operatorList: MutableList<KEY> = ArrayList()
-    fun pushKey(key: KEY) {
+    private var valueList: MutableList<Double> = ArrayList()
+    private var operatorList: MutableList<KEY> = ArrayList()
+    open fun pushKey(key: KEY) {
         when (key) {
             is KEY.ONE -> {
                 lastTextTmp += key.symbol
@@ -126,7 +127,7 @@ class CalcEngine {
                           else-> valueList[index].toString()
                     }
 
-                } + if (operatorList.isNotEmpty()) operatorList[index].symbol else ""
+                } + if (operatorList.isNotEmpty() && valueList.size!=operatorList.size+1) operatorList[index].symbol else ""
             }
 
             displayString+lastText
@@ -138,26 +139,30 @@ class CalcEngine {
 
     private fun startCalculation() {
         // Finish primary level calculations include X / and % etc
-        var index = operatorList.lastIndex
-        while(operatorList.size>0&&index!=-1) {
-            when (operatorList[0]) {
+
+        var index = 0
+        while(operatorList.size>0&&index<=operatorList.lastIndex) {
+            when (operatorList[index]) {
                 is KEY.INTO -> {
-                    valueList[0] = valueList[0] * valueList[1]
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] * valueList[index+1]
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+
                 }
                 is KEY.DIVIDE -> {
-                    valueList[0] = valueList[0] / valueList[1]
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] / valueList[index+1]
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+
                 }
                 is KEY.PERCENTAGE -> {
-                    valueList[0] = valueList[0] * valueList[1] / 100
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] * valueList[index+1] / 100
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+
                 }
                 else->{
-                    index--
+                    index++
                 }
 
             }
@@ -165,29 +170,32 @@ class CalcEngine {
 
         }
         // Finish secondary level calculations include + -  etc
-        index = operatorList.lastIndex
-        while(operatorList.size>0&&index!=-1) {
-            when (operatorList[0]) {
+        index = 0
+        while(operatorList.size>0&&index<=operatorList.lastIndex) {
+            when (operatorList[index]) {
                 is KEY.PLUS -> {
-                    valueList[0] = valueList[0] + valueList[1]
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] + valueList[index+1]
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+
                 }
                 is KEY.MINUS -> {
-                    valueList[0] = valueList[0] - valueList[1]
-                    valueList.removeAt(1)
-                    operatorList.removeAt(0)
+                    valueList[index] = valueList[index] - valueList[index+1]
+                    valueList.removeAt(index+1)
+                    operatorList.removeAt(index)
+
                 }
                 else->{
-                    index--
+                    index++
                 }
 
             }
         }
 
     }
-    fun getResult():String{
-        return if(valueList.isNotEmpty())valueList[valueList.lastIndex].toString() else ""
+
+    fun getResult():Double{
+        return if(valueList.isNotEmpty())valueList[valueList.lastIndex] else 0.0
     }
 
     private fun popAllOperators() {
@@ -205,13 +213,6 @@ class CalcEngine {
         return ""
     }
 
-    fun demo(){
-        var i = 0
-        for (i in 0..1){
-          //  Log.d("TEST123","=="+i)
-            Log.d("SaranyaChanges","=="+i)
-        }
-    }
 
     private fun popValue() {
         if (!valueList.isEmpty())
@@ -239,17 +240,28 @@ class CalcEngine {
         return false
 
     }
-private fun gitTest(){
-    for(i in 0..10){
-        Log.d("CALC123","HELLO")
-        Log.d("SREERAM TESTING","This is changes from sreeram")
-    }
-  }
-    private fun gitTest2() {
-        var i=0
-        when(i){
-            1 -> Log.d("TEST","ww")
-            2 -> Log.d("TEST123","q")
+
+    override fun toString(): String {
+        return run {
+            var stack = ""
+            for (index in valueList.indices){
+                stack+="${valueList[index]}\t\t${
+                if(index>operatorList.lastIndex)"" else operatorList[index].symbol}\n"
+            }
+            stack
         }
     }
+
+}
+class ObservableCalcEngine:CalcEngine(){
+    private val displayString:MutableLiveData<String> = MutableLiveData()
+    override fun pushKey(key:KEY){
+        super.pushKey(key)
+        displayString.value = getDisplayString()
+    }
+    fun getObservableDisplay():LiveData<String>{
+        return displayString
+    }
+
+
 }
